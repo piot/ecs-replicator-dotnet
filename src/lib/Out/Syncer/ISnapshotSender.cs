@@ -10,6 +10,7 @@ namespace Piot.EcsReplicator.Out.Syncer
     public interface ISnapshotSender
     {
         void CreateSnapshot();
-        public ReadOnlySpan<byte> SendSnapshotTo(SnapshotSyncerForClientConnection connection);
+        public ISyncerForClient CreateSyncer(ConnectionId id);
+        public ReadOnlySpan<byte> SendSnapshotTo(ISyncerForClient connection);
     }
 }

@@ -50,6 +50,7 @@ namespace Piot.EcsReplicator.Out.Syncer
             StoreChangesMadeToTheWorld();
         }
 
+
         public ReadOnlySpan<byte> SendSnapshotTo(SnapshotSyncerForClientConnection connection)
         {
             var deltaSnapshotPack = CreateConnectionSpecificSnapshot(connection);
@@ -67,6 +68,11 @@ namespace Piot.EcsReplicator.Out.Syncer
             log.Debug("wrote {Snapshot}", deltaSnapshotPack);
 
             return cachedCompleteCompressedDeltaSnapshotPackWriter.Octets;
+        }
+        
+        public ReadOnlySpan<byte> SendSnapshotTo(ISyncerForClient connection)
+        {
+            return SendSnapshotTo((SnapshotSyncerForClientConnection) connection);
         }
 
         void HandleNotifyExpectedTickId(TickId _)
@@ -106,6 +112,12 @@ namespace Piot.EcsReplicator.Out.Syncer
 
             return client;
         }
+        
+        public ISyncerForClient CreateSyncer(ConnectionId id)
+        {
+            return Create(id);
+        }
+
 
         void StoreChangesMadeToTheWorld()
         {
