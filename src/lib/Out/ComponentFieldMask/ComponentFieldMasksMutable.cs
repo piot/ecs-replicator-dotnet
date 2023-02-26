@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Piot.EcsReplicator.Out.EcsInterfaces;
 using Piot.EcsReplicator.Out.Syncer;
 
 namespace Piot.EcsReplicator.Out.ComponentFieldMask

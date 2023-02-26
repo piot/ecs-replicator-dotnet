@@ -32,12 +32,12 @@ namespace Piot.EcsReplicator.Out.Syncer
         readonly IDataSender world;
         readonly IEntityContainerWithDetectChanges worldWithChanges;
 
-        public SnapshotSender(IDataSender world, IEntityContainerWithDetectChanges worldWithChanges, EventStreamPackQueue eventStream, ILog log)
+        public SnapshotSender(IDataSender world, IEntityContainerWithDetectChanges worldWithChanges, ILog log)
         {
             this.world = world;
             this.worldWithChanges = worldWithChanges;
-            this.eventStream = eventStream;
             this.log = log;
+            eventStream = new(authoritativeTickId);
         }
 
         public AllEntitiesChangesEachTickHistory History { get; } = new();
@@ -49,7 +49,6 @@ namespace Piot.EcsReplicator.Out.Syncer
             authoritativeTickId = authoritativeTickId.Next;
             StoreChangesMadeToTheWorld();
         }
-
 
         public ReadOnlySpan<byte> SendSnapshotTo(SnapshotSyncerForClientConnection connection)
         {
@@ -117,7 +116,6 @@ namespace Piot.EcsReplicator.Out.Syncer
         {
             return Create(id);
         }
-
 
         void StoreChangesMadeToTheWorld()
         {

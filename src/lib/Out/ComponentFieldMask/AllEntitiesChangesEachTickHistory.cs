@@ -6,17 +6,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Piot.Clog;
-using Piot.EcsReplicator.Types;
+using Piot.EcsReplicator.Out.EcsInterfaces;
 
 namespace Piot.EcsReplicator.Out.ComponentFieldMask
 {
-
-    public interface IEntityContainerWithDetectChanges
-    {
-        public AllEntitiesChangesThisTick EntitiesThatHasChanged(ILog log);
-    }
-
-
     /// <summary>
     ///     Holds a bit mask with a bit for each field in a Component.
     /// </summary>
@@ -24,53 +17,6 @@ namespace Piot.EcsReplicator.Out.ComponentFieldMask
     {
         public const ulong DeletedMaskBit = 0x8000000000000000;
 
-    }
-
-    public readonly struct ComponentChangedFieldMask
-    {
-        public ComponentChangedFieldMask(ulong mask)
-        {
-            this.mask = mask;
-        }
-
-        public readonly ulong mask;
-
-        public override string ToString()
-        {
-            return $"[FieldChangeMask {mask:x4}]";
-        }
-    }
-
-    public class EntityChangesForOneEntity
-    {
-        public readonly Dictionary<ComponentTypeId, ComponentChangedFieldMask> componentChanges = new();
-        public EntityId entityId;
-
-        public EntityChangesForOneEntity(EntityId entityId)
-        {
-            this.entityId = entityId;
-        }
-
-        public void Add(ComponentTypeId componentTypeId, ComponentChangedFieldMask fieldMasks)
-        {
-            componentChanges.Add(componentTypeId, fieldMasks);
-        }
-
-        public override string ToString()
-        {
-            var s = entityId.ToString();
-            return componentChanges.Values.Aggregate(s, (current, x) => current + x);
-        }
-    }
-
-    public class AllEntitiesChangesThisTick
-    {
-        public readonly Dictionary<uint, EntityChangesForOneEntity> EntitiesComponentChanges = new();
-
-        public override string ToString()
-        {
-            return EntitiesComponentChanges.Values.Aggregate("", (current, oneEntityChanges) => current + oneEntityChanges);
-        }
     }
 
     public struct AllEntitiesChangesThisSnapshot

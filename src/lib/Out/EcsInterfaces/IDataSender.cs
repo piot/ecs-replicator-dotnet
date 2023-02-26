@@ -13,7 +13,6 @@ namespace Piot.EcsReplicator.Out.EcsInterfaces
     public interface IDataSender
     {
         public bool HasComponentTypeId(uint entityId, ushort componentTypeId);
-
         public uint[] AllEntities();
         public void WriteMask(IBitWriter writer, uint entityId, ushort componentTypeId, ulong masks);
         public void WriteFull(IBitWriter writer, uint entityId, ushort componentTypeId);
