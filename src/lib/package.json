@@ -1,0 +1,13 @@
+{
+  "name": "com.outbreakstudios.ecsreplicator.base",
+  "version": "0.0.1",
+  "displayName": "Outbreak Studios - Ecs Replicator",
+  "description": "Replicates ECS components and events",
+  "unity": "2021.3",
+  "author": {
+    "name": "Outbreak Studios",
+    "email": "info@outbreakstudios.com",
+    "url": "https://outbreakstudios.com"
+  },
+  "license": "MIT"
+}

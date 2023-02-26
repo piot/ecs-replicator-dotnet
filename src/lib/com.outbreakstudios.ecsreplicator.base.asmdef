@@ -1,0 +1,12 @@
+{
+  "name": "com.outbreakstudios.ecsreplicator.base",
+  "references": [
+    "com.outbreakstudios.blitser.base",
+    "com.outbreakstudios.flood.base",
+    "com.outbreakstudios.monotonic-time.base",
+    "com.outbreakstudios.clog.base"
+  ],
+  "dependencies": {
+    "com.outbreakstudios.blitser.base": "0.0.1"
+  }
+}

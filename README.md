@@ -1,1 +1,3 @@
-# ecs-replicator-dotnet
+# ECS Replicator for .NET
+
+Serialize and Deserialize atomic structural changes for components.
