@@ -56,9 +56,5 @@ namespace Piot.EcsReplicator.Out.EcsInterfaces
             return EntitiesComponentChanges.Values.Aggregate("", (current, oneEntityChanges) => current + oneEntityChanges);
         }
     }
-    
-    public interface IEntityContainerWithDetectChanges
-    {
-        public AllEntitiesChangesThisTick EntitiesThatHasChanged(ILog log);
-    }
+
 }

@@ -30,12 +30,10 @@ namespace Piot.EcsReplicator.Out.Syncer
         TickId authoritativeTickId;
         readonly EventStreamPackQueue eventStream;
         readonly IDataSender world;
-        readonly IEntityContainerWithDetectChanges worldWithChanges;
 
-        public SnapshotSender(IDataSender world, IEntityContainerWithDetectChanges worldWithChanges, ILog log)
+        public SnapshotSender(IDataSender world, ILog log)
         {
             this.world = world;
-            this.worldWithChanges = worldWithChanges;
             this.log = log;
             eventStream = new(authoritativeTickId);
         }
@@ -44,10 +42,10 @@ namespace Piot.EcsReplicator.Out.Syncer
 
         public IEnumerable<SnapshotSyncerForClientConnection> ClientSyncers => syncClients;
 
-        public void CreateSnapshot()
+        public void CreateSnapshot(AllEntitiesChangesThisTick entitiesThatHasChanged)
         {
             authoritativeTickId = authoritativeTickId.Next;
-            StoreChangesMadeToTheWorld();
+            StoreChangesMadeToTheWorld(entitiesThatHasChanged);
         }
 
         public ReadOnlySpan<byte> SendSnapshotTo(SnapshotSyncerForClientConnection connection)
@@ -68,13 +66,13 @@ namespace Piot.EcsReplicator.Out.Syncer
 
             return cachedCompleteCompressedDeltaSnapshotPackWriter.Octets;
         }
-        
+
         public ReadOnlySpan<byte> SendSnapshotTo(ISyncerForClient connection)
         {
-            return SendSnapshotTo((SnapshotSyncerForClientConnection) connection);
+            return SendSnapshotTo((SnapshotSyncerForClientConnection)connection);
         }
 
-        void HandleNotifyExpectedTickId(TickId _)
+        void DiscardHistoryNotNeededBySyncClients()
         {
             TickId lowestTickId = new(0);
             var hasBeenSet = false;
@@ -103,26 +101,31 @@ namespace Piot.EcsReplicator.Out.Syncer
             History.DiscardUpTo(allClientsAreWaitingForAtLeastTickId);
         }
 
+        public void Update()
+        {
+            DiscardHistoryNotNeededBySyncClients();
+        }
+
         public SnapshotSyncerForClientConnection Create(ConnectionId id)
         {
-            var client = new SnapshotSyncerForClientConnection(id, HandleNotifyExpectedTickId, log.SubLog($"Syncer{id}"));
+            var client = new SnapshotSyncerForClientConnection(id, log.SubLog($"Syncer{id}"));
 
             syncClients.Add(client);
 
             return client;
         }
-        
+
         public ISyncerForClient CreateSyncer(ConnectionId id)
         {
             return Create(id);
         }
 
-        void StoreChangesMadeToTheWorld()
+        void StoreChangesMadeToTheWorld(AllEntitiesChangesThisTick changes)
         {
-            var changes = worldWithChanges.EntitiesThatHasChanged(log);
             var extraChanges = new AllEntitiesChangesThisSnapshot
             {
-                EcsChanges = changes, TickId = authoritativeTickId
+                EcsChanges = changes,
+                TickId = authoritativeTickId
             };
 
             log.Debug("Store World changes {Changes}", extraChanges);

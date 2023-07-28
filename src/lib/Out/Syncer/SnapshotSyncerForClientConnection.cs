@@ -15,12 +15,11 @@ namespace Piot.EcsReplicator.Out.Syncer
 {
     public sealed class SnapshotSyncerForClientConnection : ISyncerForClient
     {
-        readonly Action<TickId> OnNotifyExpectingTickId;
         readonly ILog log;
+        public bool expectingTickIdUpdated;
 
-        public SnapshotSyncerForClientConnection(ConnectionId id, Action<TickId> onNotifyExpectingTickId, ILog log)
+        public SnapshotSyncerForClientConnection(ConnectionId id, ILog log)
         {
-            OnNotifyExpectingTickId = onNotifyExpectingTickId;
             Endpoint = id;
             this.log = log;
         }
@@ -53,7 +52,7 @@ namespace Piot.EcsReplicator.Out.Syncer
             log.Debug("Received information that remote is expecting {ExpectingTickId} and has dropped {DroppedCount} after that", expectingTickId, droppedCount);
             if (expectingTickId != RemoteIsExpectingTickId)
             {
-                OnNotifyExpectingTickId(expectingTickId);
+                expectingTickIdUpdated = true;
             }
 
             RemoteIsExpectingTickId = expectingTickId;
